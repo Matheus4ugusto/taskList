@@ -1,8 +1,26 @@
+import {randomUUID} from "node:crypto"
+import {Database} from "./database.js";
+
+const database = new Database()
+
 export const routes = [
     {
         method: 'POST',
         path: '/tasks',
         handler: (request, response) => {
+            const {title, description} = request.body
+            const task = {
+                id: randomUUID(),
+                title,
+                description,
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString(),
+                completed_at: null,
+            }
+
+            database.insert('tasks', task)
+
+            return response.writeHead(201).end(JSON.stringify(task))
 
         }
     },

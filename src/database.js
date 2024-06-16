@@ -1,4 +1,4 @@
-import fs from 'node:promises'
+import fs from 'node:fs/promises'
 
 const databasePath = new URL('../db.json', import.meta.url)
 
@@ -18,12 +18,16 @@ export class Database{
         fs.writeFile(databasePath, JSON.stringify(this.#database))
     }
 
-    insert(table, search){
-        let data = this.#database[table] ?? []
+    insert(table, data){
+       if(Array.isArray(this.#database[table])){
+           this.#database[table].push(data)
+       }else {
+           this.#database[table] = [data]
+       }
 
-        if(search){
-            data = data.filter(row => Object.entries(search).some(([key, value]) => row[key]. toLowerCase().includes(value.toString())))
-        }
+       this.#persist()
+
+        return data
     }
 
 }
